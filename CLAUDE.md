@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Maintenance
+
+Keep `README.md` up to date as the project evolves. Any significant change — new CLI flags, changed defaults, replaced transforms, new dependencies, or architectural shifts — should be reflected in the README before the work is considered complete.
+
 ## Running the code
 
 ```bash

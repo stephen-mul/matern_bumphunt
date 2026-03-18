@@ -10,7 +10,7 @@ For each candidate bump position m₀, the sliding-window procedure:
 2. Masks a signal region of half-width `w` around m₀
 3. Fits a GP (Matérn-5/2 kernel) to the sideband data (window minus mask)
 4. Predicts the background expectation and uncertainty inside the mask
-5. Computes a local test statistic (excess significance in σ) using the Anscombe-transformed counts
+5. Computes a local test statistic (excess significance in σ) in counts space
 6. Slides m₀ across the full spectrum and records the scan
 
 The scan is repeated for multiple mask half-widths to be sensitive to bumps of different widths. The final significance curve is the per-position envelope (maximum σ over all mask widths), whose peaks flag bump candidates.
@@ -19,13 +19,16 @@ The scan is repeated for multiple mask half-widths to be sensitive to bumps of d
 
 ```bash
 # Run on synthetic demo data (200-bin falling spectrum with injected Gaussian bump at bin 120)
-python main.py
+uv run python main.py
 
 # Run on real data — CSV with columns: bin_center, counts
-python main.py --input data.csv
+uv run python main.py --input data.csv
 
-# Specify output plot path and enable verbose progress
-python main.py --input data.csv --output results.png --verbose
+# Specify output plot path and log level
+uv run python main.py --input data.csv --output results.png --log-level DEBUG
+
+# Shorthand for DEBUG logging
+uv run python main.py --verbose
 ```
 
 ## Output
@@ -48,13 +51,13 @@ All tunable parameters are in `BumpHuntConfig` (`main.py:51`):
 | `mask_half_widths` | [1,2,3,4,5] | Signal region half-widths to scan |
 | `nu` | 2.5 | Matérn smoothness parameter |
 | `length_scale_bounds` | (6, 60) | GP length-scale bounds (lower bound > max signal width) |
-| `noise_level_bounds` | (1e-2, 1e3) | White-noise kernel bounds |
+| `noise_level_bounds` | (1e-4, 1e0) | White-noise kernel bounds (in log-space) |
 | `min_sideband_bins` | 10 | Minimum sideband bins required to fit |
 | `local_sigma_threshold` | 3.0 | σ threshold for flagging candidates |
 
 ## Installation
 
-Requires Python ≥ 3.12. Install dependencies with [uv](https://github.com/astral-sh/uv):
+Requires Python ≥ 3.12. [uv](https://github.com/astral-sh/uv) is the recommended way to install and run the project:
 
 ```bash
 uv sync
@@ -64,7 +67,7 @@ uv run python main.py
 Or with pip:
 
 ```bash
-pip install numpy matplotlib scikit-learn
+pip install numpy matplotlib scikit-learn loguru
 python main.py
 ```
 
@@ -73,3 +76,4 @@ python main.py
 - `numpy` ≥ 2.4
 - `matplotlib` ≥ 3.10
 - `scikit-learn` ≥ 1.8
+- `loguru` ≥ 0.7
