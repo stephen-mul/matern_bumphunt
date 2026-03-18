@@ -26,7 +26,7 @@ Everything lives in `main.py`. The pipeline has four layers:
 
 3. **Scan engine** — `run_bumphunt()` → `run_scan()` implements the sliding-window loop. Counts are transformed to **log(counts + 1)** space before GP fitting. For each candidate position the GP is fit on sideband data and predicts into the masked signal region; predictions are converted back to counts space via `_log_to_counts()` (log-normal mean: `exp(μ + σ²/2) - 1`, delta-method std: `exp(μ) * σ`). The local significance is `(obs - pred) / sqrt(pred + sigma_gp²)` summed over the mask. Results are stored in `ScanResult` dataclasses.
 
-4. **Post-processing** — `max_local_significance()` takes the per-position envelope over all mask widths. `print_candidates()` clusters adjacent above-threshold bins and reports them. `plot_results()` produces the three-panel diagnostic figure, including a smooth background overlay from `fit_full_background()` — a separate full-spectrum GP fit used for display only (not the scan).
+4. **Post-processing** — `max_local_significance()` takes the per-position envelope over all mask widths. `print_candidates()` clusters adjacent above-threshold bins and reports them. `plot_results()` produces a multi-panel diagnostic figure: one global-fit panel, one stitched-background panel per mask width, then the per-width significance curves and the max-significance envelope. The stitched background for a given mask width is the GP's prediction at each center bin m₀ (stored as `ScanResult.stitched_bkg`), assembled from the per-position sideband fits. `fit_full_background()` fits the entire spectrum at once for the global overlay (display only — it partially absorbs any signal).
 
 ## Key design choices
 

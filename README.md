@@ -33,10 +33,11 @@ uv run python main.py --verbose
 
 ## Output
 
-- A three-panel diagnostic PNG plot:
-  - **Top**: observed spectrum with GP background overlay
-  - **Middle**: local significance curves for each mask half-width
-  - **Bottom**: max-significance envelope with candidates marked above threshold
+- A multi-panel diagnostic PNG plot:
+  - **Global fit**: observed spectrum with full-spectrum GP background overlay and ±1σ band
+  - **Stitched fit × N**: one panel per mask half-width showing the stitched sideband-GP background overlaid on the data
+  - **Significance**: local significance curves for each mask half-width
+  - **Envelope**: max-significance curve across all mask widths, with candidates marked above threshold
 - A printed table of bump candidates (clustered regions above the local σ threshold)
 
 > **Note**: reported significances are *local* (pre-trials). Apply a look-elsewhere correction for global p-values.
