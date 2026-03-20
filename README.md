@@ -29,6 +29,9 @@ uv run python main.py --input data.csv --output results.png --log-level DEBUG
 
 # Shorthand for DEBUG logging
 uv run python main.py --verbose
+
+# Add toy-MC look-elsewhere correction (slow: each toy = one full scan)
+uv run python main.py --lee-toys 1000 --lee-seed 42
 ```
 
 ## Output
@@ -40,11 +43,11 @@ uv run python main.py --verbose
   - **Envelope**: max-significance curve across all mask widths, with candidates marked above threshold
 - A printed table of bump candidates (clustered regions above the local σ threshold)
 
-> **Note**: reported significances are *local* (pre-trials). Apply a look-elsewhere correction for global p-values.
+> **Note**: Gross-Vitells LEE correction runs automatically after every scan.  Use `--lee-toys N` for a toy-MC cross-check (N ≥ 1 000 recommended for reliable sub-per-mille global p-values).
 
 ## Configuration
 
-All tunable parameters are in `BumpHuntConfig` (`main.py:51`):
+All tunable parameters are in `BumpHuntConfig` (`bumphunt/config.py`):
 
 | Parameter | Default | Description |
 |---|---|---|
@@ -55,6 +58,7 @@ All tunable parameters are in `BumpHuntConfig` (`main.py:51`):
 | `noise_level_bounds` | (1e-4, 1e0) | White-noise kernel bounds (in log-space) |
 | `min_sideband_bins` | 10 | Minimum sideband bins required to fit |
 | `local_sigma_threshold` | 3.0 | σ threshold for flagging candidates |
+| `lee_reference_level` | 1.0 | Reference level c₀ for Gross-Vitells upcrossing count |
 
 ## Installation
 
@@ -70,6 +74,27 @@ Or with pip:
 ```bash
 pip install numpy matplotlib scikit-learn loguru
 python main.py
+```
+
+## Tests
+
+```bash
+uv run pytest
+```
+
+## Project layout
+
+```
+bumphunt/          # core package
+  config.py        # BumpHuntConfig
+  data.py          # generate_synthetic_spectrum
+  models.py        # ScanResult + GP utilities
+  scan.py          # run_scan, run_bumphunt, fit_full_background, max_local_significance
+  reporting.py     # print_candidates, print_lee_summary
+  plotting.py      # plot_results
+  lee.py           # gross_vitells_correction, lee_toy_mc, count_upcrossings
+tests/             # pytest test suite
+main.py            # CLI entry point
 ```
 
 ## Dependencies
